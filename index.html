@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Random Pixel</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      font-family: sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #pixel {
+      width: 1px;
+      height: 1px;
+      position: absolute;
+    }
+
+    .github-link {
+      margin-top: 20px;
+      font-size: 1.2em;
+      text-decoration: none;
+      color: #0366d6;
+    }
+
+    .github-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <img id="pixel" src="https://grabify.link/13XV82" alt="Pixel" />
+  <a class="github-link" href="https://github.com/copyrighttxt" target="_blank">
+    Visit My GitHub
+  </a>
+
+  <script>
+    const pixel = document.getElementById('pixel');
+    const maxX = window.innerWidth - 1;
+    const maxY = window.innerHeight - 1;
+    const randX = Math.floor(Math.random() * maxX);
+    const randY = Math.floor(Math.random() * maxY);
+    pixel.style.left = randX + 'px';
+    pixel.style.top = randY + 'px';
+  </script>
+</body>
+</html>
