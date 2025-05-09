@@ -5,50 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>:3</title>
 
-  <!-- Tailwind CSS for utility classes -->
+  <!-- Tailwind CSS for layout & Lucide for icons -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide for SVG icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
     body {
       font-family: 'Inter', sans-serif;
-      background: #000;
-      color: #fff;
     }
 
-    /* Card around audio controls */
+    /* Container for custom audio */
     .custom-audio-container {
-      background: #1f2937;            /* gray-800 */
-      border: 2px solid #4b5563;     /* gray-600 */
-      border-radius: 1rem;           /* rounded-2xl */
-      padding: .75rem;               /* p-3 */
+      background-color: #1f2937;             /* gray-800 */
+      border: 2px solid #4b5563;             /* gray-600 */ 
+      border-radius: 1rem;                   /* rounded-2xl */
+      padding: 0.75rem;                      /* p-3 */
+      width: 100%;
       max-width: 320px;
       margin: 1rem auto;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);  /* soft shadow */
     }
 
-    /* Style native WebKit controls panel */
+    /* Make the native controls panel match container */
     .custom-audio::-webkit-media-controls-panel {
-      background: #1f2937;           /* gray-800 */
-      border-radius: .75rem;         /* rounded-xl */
+      background-color: #1f2937;             /* gray-800 */ 
+      border-radius: 0.75rem;                /* rounded-xl */
     }
+
     /* Invert default icons for visibility */
     .custom-audio::-webkit-media-controls-play-button,
     .custom-audio::-webkit-media-controls-volume-slider,
     .custom-audio::-webkit-media-controls-mute-button {
       filter: invert(100%);
     }
+
     /* Firefox styling */
     .custom-audio::-moz-media-controls {
-      background: #1f2937;
-      border-radius: .75rem;
+      background-color: #1f2937;
+      border-radius: 0.75rem;
     }
   </style>
 </head>
 
-<body class="flex flex-col items-center justify-center min-h-screen px-4 py-10 space-y-8">
+<body class="bg-black text-white flex flex-col items-center justify-center min-h-screen px-4 py-10 space-y-8">
 
   <!-- Page Title -->
   <h1 class="text-4xl font-bold">:3</h1>
@@ -95,23 +95,14 @@
   <!-- Custom Audio Player -->
   <div class="custom-audio-container text-center">
     <p class="text-sm text-gray-400 mb-2">Now Playing: <span class="italic">bipolar</span></p>
-    <audio id="bg-audio" class="custom-audio w-full" controls autoplay loop muted>
+    <audio class="custom-audio w-full" controls autoplay loop>
       <source src="https://github.com/copyrighttxt/copyrighttxt.github.io/raw/refs/heads/main/music.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
+      Your browser does not support the audio element.  
     </audio>
   </div>
 
   <script>
-    // Render icons
     lucide.createIcons();
-    // On load, unmute & play—fallback if autoplay was blocked
-    window.addEventListener('load', () => {
-      const audio = document.getElementById('bg-audio');
-      audio.muted = false;
-      audio.play().catch(() => {
-        console.warn('Autoplay prevented; awaiting user interaction to play audio.');
-      });
-    });
   </script>
 </body>
 </html>
