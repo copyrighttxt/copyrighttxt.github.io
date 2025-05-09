@@ -3,64 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>s</title>
+  <title>:3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
     body {
-      margin: 0;
-      height: 100vh;
-      overflow: hidden;
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-
-    #pixel {
-      width: 1px;
-      height: 1px;
-      position: absolute;
-    }
-
-    .github-link {
-      margin-top: 20px;
-      font-size: 1.2em;
-      text-decoration: none;
-      color: #bb86fc;
-    }
-
-    .github-link:hover {
-      text-decoration: underline;
+      font-family: 'Inter', sans-serif;
     }
   </style>
-
-  <script>
-    window.__startB64 = 'aHR0cHM6Ly9ncmFiaWZ5Lmxpbms';
-  </script>
 </head>
-<body>
+<body class="bg-black text-white flex flex-col items-center justify-center min-h-screen px-4 py-10 space-y-8">
 
-  <img id="pixel" alt="Pixel" />
-  <a class="github-link" href="https://github.com/copyrighttxt" target="_blank">
-    Visit My GitHub
-  </a>
+  <!-- Background Music -->
+  <audio autoplay loop hidden>
+    <source src="music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- Title -->
+  <h1 class="text-4xl font-bold text-white mb-2">socialsss</h1>
+
+  <!-- Buttons -->
+  <div class="flex flex-col gap-4 w-full max-w-xs">
+    <a href="https://www.tiktok.com/@copyright.txt" target="_blank"
+       class="bg-white text-black flex items-center justify-between px-4 py-3 rounded-2xl hover:scale-105 transition transform">
+      <div class="flex items-center gap-3">
+        <i data-lucide="music-3"></i>
+        <span class="font-semibold">TikTok</span>
+      </div>
+      <span>@copyright.txt</span>
+    </a>
+
+    <a href="https://github.com/copyrighttxt" target="_blank"
+       class="bg-gray-800 text-white flex items-center justify-between px-4 py-3 rounded-2xl hover:scale-105 transition transform">
+      <div class="flex items-center gap-3">
+        <i data-lucide="github"></i>
+        <span class="font-semibold">GitHub</span>
+      </div>
+      <span>@copyrighttxt</span>
+    </a>
+
+    <a href="https://www.youtube.com/@rlxw" target="_blank"
+       class="bg-red-600 text-white flex items-center justify-between px-4 py-3 rounded-2xl hover:scale-105 transition transform">
+      <div class="flex items-center gap-3">
+        <i data-lucide="youtube"></i>
+        <span class="font-semibold">YouTube</span>
+      </div>
+      <span>@rlxw</span>
+    </a>
+
+    <a href="https://twitter.com/copyrighttxt" target="_blank"
+       class="bg-blue-500 text-white flex items-center justify-between px-4 py-3 rounded-2xl hover:scale-105 transition transform">
+      <div class="flex items-center gap-3">
+        <i data-lucide="twitter"></i>
+        <span class="font-semibold">Twitter</span>
+      </div>
+      <span>@copyrighttxt</span>
+    </a>
+  </div>
 
   <script>
-    const endB64 = 'LzEzWFY4Mg==';
-    const decode = b64 => atob(b64);
-    const imgSrc = decode(window.__startB64) + decode(endB64);
-
-    const pixel = document.getElementById('pixel');
-    pixel.src = imgSrc;
-
-    const maxX = window.innerWidth - 1;
-    const maxY = window.innerHeight - 1;
-    const randX = Math.floor(Math.random() * maxX);
-    const randY = Math.floor(Math.random() * maxY);
-    pixel.style.left = randX + 'px';
-    pixel.style.top = randY + 'px';
+    lucide.createIcons();
   </script>
 </body>
 </html>
