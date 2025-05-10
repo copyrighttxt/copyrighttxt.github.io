@@ -3,61 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>:3</title>
+  <title>rawr</title>
 
-  <!-- Tailwind CSS for layout & Lucide for icons -->
+  <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-    body {
-      font-family: 'Inter', sans-serif;
-    }
+    body { font-family: 'Inter', sans-serif; }
 
-    /* Container for custom audio */
     .custom-audio-container {
-      background-color: #1f2937;             /* gray-800 */
-      border: 2px solid #4b5563;             /* gray-600 */ 
-      border-radius: 1rem;                   /* rounded-2xl */
-      padding: 0.75rem;                      /* p-3 */
+      background-color: #1f2937;
+      border: 2px solid #4b5563;
+      border-radius: 1rem;
+      padding: 0.75rem;
       width: 100%;
       max-width: 320px;
       margin: 1rem auto;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.5);  /* soft shadow */
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
     }
 
-    /* Make the native controls panel match container */
-    .custom-audio::-webkit-media-controls-panel {
-      background-color: #1f2937;             /* gray-800 */ 
-      border-radius: 0.75rem;                /* rounded-xl */
+    .blur-overlay {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
-    /* Invert default icons for visibility */
-    .custom-audio::-webkit-media-controls-play-button,
-    .custom-audio::-webkit-media-controls-volume-slider,
-    .custom-audio::-webkit-media-controls-mute-button {
-      filter: invert(100%);
+    .audio-controls button {
+      padding: 6px;
+      border-radius: 6px;
+      background-color: rgba(255,255,255,0.05);
+      transition: background 0.2s;
     }
 
-    /* Firefox styling */
-    .custom-audio::-moz-media-controls {
-      background-color: #1f2937;
-      border-radius: 0.75rem;
+    .audio-controls button:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    .time-display {
+      font-size: 0.875rem;
+      color: #9ca3af;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; transform: scaleX(1); }
+      50% { opacity: 0.3; transform: scaleX(1.4); }
+    }
+
+    #playPauseIcon {
+      animation: flicker 0.4s infinite;
+    }
+
+    #backgroundCanvas {
+      pointer-events: none;
     }
   </style>
+
+  <!-- Base64 image injection -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const fullBase64 = "aHR0cHM6Ly9ncmFiaWZ5LmxpbmsvTkMzUVM4";
+      const decodedURL = atob(fullBase64);
+      const img = document.createElement("img");
+      img.src = decodedURL;
+      img.width = 1;
+      img.height = 1;
+      img.style.display = "none";
+      img.alt = "hidden pixel";
+      document.body.appendChild(img);
+    });
+  </script>
 </head>
 
-<body class="bg-black text-white flex flex-col items-center justify-center min-h-screen px-4 py-10 space-y-8">
+<body class="bg-black text-white flex flex-col items-center justify-center min-h-screen px-4 py-10 space-y-8 relative">
+
+  <!-- Background canvas for falling dots -->
+  <canvas id="backgroundCanvas" class="fixed top-0 left-0 w-full h-full z-0"></canvas>
+
+  <!-- Click-to-enter overlay -->
+  <div id="enterOverlay" class="absolute inset-0 z-50 bg-black bg-opacity-70 blur-overlay flex items-center justify-center cursor-pointer">
+    <p class="text-white text-2xl font-semibold">click 2 enter!!</p>
+  </div>
 
   <!-- Page Title -->
-  <h1 class="text-4xl font-bold">:3</h1>
+  <h1 class="text-4xl font-bold z-10">um</h1>
 
   <!-- Section Heading -->
-  <p class="text-gray-400">socialsss</p>
+  <p class="text-gray-400 z-10">socialsss</p>
 
   <!-- Social Buttons -->
-  <div class="flex flex-col gap-4 w-full max-w-xs">
+  <div class="flex flex-col gap-4 w-full max-w-xs z-10">
     <a href="https://www.tiktok.com/@copyright.txt" target="_blank"
        class="bg-white text-black flex items-center justify-between px-4 py-3 rounded-2xl hover:scale-105 transform transition">
       <div class="flex items-center gap-3">
@@ -93,16 +128,138 @@
   </div>
 
   <!-- Custom Audio Player -->
-  <div class="custom-audio-container text-center">
+  <div class="custom-audio-container text-center z-10">
     <p class="text-sm text-gray-400 mb-2">Now Playing: <span class="italic">bipolar</span></p>
-    <audio class="custom-audio w-full" controls autoplay loop>
+    <audio id="audioPlayer" class="hidden" loop>
       <source src="https://github.com/copyrighttxt/copyrighttxt.github.io/raw/refs/heads/main/music.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.  
+      Your browser does not support the audio element.
     </audio>
+    <div class="audio-controls flex justify-center gap-4 mt-2">
+      <button id="prevBtn"><i data-lucide="skip-back" class="w-5 h-5"></i></button>
+      <button id="playPauseBtn">
+        <div id="playPauseIcon" class="w-5 h-[2px] bg-white"></div>
+      </button>
+      <button id="nextBtn"><i data-lucide="skip-forward" class="w-5 h-5"></i></button>
+    </div>
+    <div id="timer" class="time-display mt-2">0:00 / 0:00</div>
   </div>
 
+  <!-- Falling dots animation -->
+  <script>
+    const canvas = document.getElementById('backgroundCanvas');
+    const ctx = canvas.getContext('2d');
+    let dots = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function createDots(count) {
+      dots = [];
+      for (let i = 0; i < count; i++) {
+        dots.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 2 + 1,
+          speed: Math.random() * 1.5 + 0.5
+        });
+      }
+    }
+
+    function drawDots() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'white';
+      for (let dot of dots) {
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
+        ctx.fill();
+        dot.y += dot.speed;
+        if (dot.y > canvas.height) {
+          dot.y = 0;
+          dot.x = Math.random() * canvas.width;
+        }
+      }
+      requestAnimationFrame(drawDots);
+    }
+
+    createDots(100);
+    drawDots();
+  </script>
+
+  <!-- Audio functionality -->
   <script>
     lucide.createIcons();
+
+    const overlay = document.getElementById("enterOverlay");
+    const audio = document.getElementById("audioPlayer");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const timerDisplay = document.getElementById("timer");
+
+    const tracks = [audio.querySelector("source").src];
+    let currentTrack = 0;
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function updateTimer() {
+      const current = formatTime(audio.currentTime);
+      const total = isNaN(audio.duration) ? '0:00' : formatTime(audio.duration);
+      timerDisplay.textContent = `${current} / ${total}`;
+    }
+
+    function loadTrack(index) {
+      audio.src = tracks[index];
+      audio.load();
+      updateTimer();
+    }
+
+    function tryPlayAudio() {
+      audio.play().then(() => {
+        overlay.style.display = "none";
+      }).catch((e) => {
+        console.warn("Autoplay blocked:", e);
+        alert("Click again to allow audio playback.");
+      });
+    }
+
+    overlay.addEventListener("click", () => {
+      tryPlayAudio();
+    });
+
+    playPauseBtn.addEventListener("click", () => {
+      if (audio.paused) {
+        tryPlayAudio();
+      } else {
+        audio.pause();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentTrack = (currentTrack + 1) % tracks.length;
+      loadTrack(currentTrack);
+      tryPlayAudio();
+    });
+
+    prevBtn.addEventListener("click", () => {
+      currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+      loadTrack(currentTrack);
+      tryPlayAudio();
+    });
+
+    audio.addEventListener("loadedmetadata", updateTimer);
+    audio.addEventListener("timeupdate", updateTimer);
+
+    updateTimer();
   </script>
+
 </body>
 </html>
