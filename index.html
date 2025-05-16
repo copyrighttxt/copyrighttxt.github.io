@@ -57,9 +57,17 @@
     #backgroundCanvas {
       pointer-events: none;
     }
+
+    #currentLyric {
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
   </style>
 
-  <!-- Base64 image injection -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const fullBase64 = "aHR0cHM6Ly9ncmFiaWZ5LmxpbmsvVTFUUU8y";
@@ -77,21 +85,15 @@
 
 <body class="bg-black text-white flex flex-col items-center justify-center min-h-screen px-4 py-10 space-y-8 relative">
 
-  <!-- Background canvas for falling dots -->
   <canvas id="backgroundCanvas" class="fixed top-0 left-0 w-full h-full z-0"></canvas>
 
-  <!-- Click-to-enter overlay -->
   <div id="enterOverlay" class="absolute inset-0 z-50 bg-black bg-opacity-70 blur-overlay flex items-center justify-center cursor-pointer">
     <p class="text-white text-2xl font-semibold">click 2 enter!!</p>
   </div>
 
-  <!-- Page Title -->
   <h1 class="text-4xl font-bold z-10">um</h1>
-
-  <!-- Section Heading -->
   <p class="text-gray-400 z-10">socialsss</p>
 
-  <!-- Social Buttons -->
   <div class="flex flex-col gap-4 w-full max-w-xs z-10">
     <a href="https://www.tiktok.com/@copyright.txt" target="_blank"
        class="bg-white text-black flex items-center justify-between px-4 py-3 rounded-2xl hover:scale-105 transform transition">
@@ -127,7 +129,6 @@
     </a>
   </div>
 
-  <!-- Custom Audio Player -->
   <div class="custom-audio-container text-center z-10">
     <p class="text-sm text-gray-400 mb-2">Now Playing: <span class="italic">i wrote this poem about you listen you dont have a choice</span></p>
     <audio id="audioPlayer" class="hidden" loop>
@@ -136,15 +137,23 @@
     </audio>
     <div class="audio-controls flex justify-center gap-4 mt-2">
       <button id="prevBtn"><i data-lucide="skip-back" class="w-5 h-5"></i></button>
-      <button id="playPauseBtn">
-        <div id="playPauseIcon" class="w-5 h-[2px] bg-white"></div>
-      </button>
+      <button id="playPauseBtn"><div id="playPauseIcon" class="w-5 h-[2px] bg-white"></div></button>
       <button id="nextBtn"><i data-lucide="skip-forward" class="w-5 h-5"></i></button>
     </div>
     <div id="timer" class="time-display mt-2">0:00 / 0:00</div>
   </div>
 
-  <!-- Falling dots animation -->
+  <!-- Synced Lyrics Box -->
+  <div class="custom-audio-container text-center z-10 mt-4 max-w-md">
+    <p class="text-sm text-gray-400 mb-2">Lyrics</p>
+    <div id="lyricsDisplay" class="text-sm text-gray-300 whitespace-pre-line h-32 overflow-hidden relative">
+      <p id="currentLyric" class="transition-opacity duration-300 ease-in-out text-lg"></p>
+    </div>
+  </div>
+  <div id="lyricsDisplay" class="text-sm text-gray-300 max-w-md mx-auto mt-4 z-10 text-center h-32 overflow-hidden relative">
+    <p id="currentLyric" class="transition-opacity duration-300 ease-in-out text-lg"></p>
+  </div>
+
   <script>
     const canvas = document.getElementById('backgroundCanvas');
     const ctx = canvas.getContext('2d');
@@ -161,12 +170,7 @@
     function createDots(count) {
       dots = [];
       for (let i = 0; i < count; i++) {
-        dots.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          r: Math.random() * 2 + 1,
-          speed: Math.random() * 1.5 + 0.5
-        });
+        dots.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 2 + 1, speed: Math.random() * 1.5 + 0.5 });
       }
     }
 
@@ -188,10 +192,7 @@
 
     createDots(100);
     drawDots();
-  </script>
 
-  <!-- Audio functionality -->
-  <script>
     lucide.createIcons();
 
     const overlay = document.getElementById("enterOverlay");
@@ -200,9 +201,24 @@
     const nextBtn = document.getElementById("nextBtn");
     const prevBtn = document.getElementById("prevBtn");
     const timerDisplay = document.getElementById("timer");
+    const lyricElement = document.getElementById("currentLyric");
 
     const tracks = [audio.querySelector("source").src];
     let currentTrack = 0;
+
+    const lyrics = [
+      { time: 0, text: "Today, I realized all my music really is just noise" },
+      { time: 8, text: "I like to talk to myself, but when in your voice" },
+      { time: 12, text: "I wrote this poem 'bout you, listen, you don't have no choice" },
+      { time: 17, text: "And I'll keep waiting 'less you start talking to other boys" },
+      { time: 21, text: "I wrote this poem 'bout you, listen, you don't have no choice" },
+      { time: 26, text: "And I'll keep waiting 'less you start talking to other boys" },
+      { time: 30, text: "Fucking hate my brain, wanna blow it out" },
+      { time: 35, text: "I can't talk 'bout that with you, you might hear me out" },
+      { time: 39, text: "Say you feel the same as me, but you just want clout" },
+      { time: 43, text: "I'm really the only one who doesn't run their mouth" },
+      { time: 50, text: "Keep her picture, you might miss her" }
+    ];
 
     function formatTime(seconds) {
       const m = Math.floor(seconds / 60);
@@ -231,6 +247,16 @@
       });
     }
 
+    function syncLyrics() {
+      const currentTime = audio.currentTime;
+      for (let i = lyrics.length - 1; i >= 0; i--) {
+        if (currentTime >= lyrics[i].time) {
+          lyricElement.textContent = lyrics[i].text;
+          break;
+        }
+      }
+    }
+
     overlay.addEventListener("click", () => {
       tryPlayAudio();
     });
@@ -256,10 +282,12 @@
     });
 
     audio.addEventListener("loadedmetadata", updateTimer);
-    audio.addEventListener("timeupdate", updateTimer);
+    audio.addEventListener("timeupdate", () => {
+      updateTimer();
+      syncLyrics();
+    });
 
     updateTimer();
   </script>
-
 </body>
 </html>
